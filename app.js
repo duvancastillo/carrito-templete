@@ -1,10 +1,28 @@
+const footer = document.getElementById("footer"); 
+const templateFooter = document.getElementById("templateFooter");
 const carrito = document.getElementById("carrito");
-const template = document.getElementById("template");
+const template = document.getElementById("template"); 
 const fragment = document.createDocumentFragment();
-const btnsBotones = document.querySelectorAll(".card .btn");
 
 
-const carritoObjeto = [];
+document.addEventListener("click", e => {
+
+    if(e.target.matches(".card .btn-outline-primary"))
+    {
+       agregarAlCarrito(e);
+    }
+    if(e.target.matches(".list-group-item .btn-success"))
+    {
+        btnAumentar(e);
+    }
+   
+    if(e.target.matches(".list-group-item .btn-danger"))
+    {
+        btnDisminuir(e);
+    }
+}  )
+
+let carritoObjeto = [];
 
 const agregarAlCarrito = (e) =>{
 
@@ -12,7 +30,8 @@ const agregarAlCarrito = (e) =>{
     const producto = {
         titulo : e.target.dataset.fruta,
         id: e.target.dataset.fruta,
-        cantidad: 1
+        cantidad: 1,
+        precio: parseInt(e.target.dataset.precio)
     }
     
     const indice = carritoObjeto.findIndex(
@@ -24,26 +43,80 @@ const agregarAlCarrito = (e) =>{
             carritoObjeto.push(producto)
         }else{
             carritoObjeto[indice].cantidad ++
+            
         }
 
         
 
     
-    pintarCarrito(carritoObjeto);
+    pintarCarrito();
 }
- const pintarCarrito = (array) =>{
+ const pintarCarrito = () =>{  
     carrito.textContent = " ";
-        array.forEach((item)=>{
-        const clone = template.content.firstElementChild.cloneNode(true);
-        clone.querySelector(".lead").textContent = item.titulo;
+        carritoObjeto.forEach((item)=>{
+        const clone = template.content.cloneNode(true);
+        clone.querySelector(".text-white .lead").textContent = item.titulo;
         clone.querySelector(".badge").textContent = item.cantidad;
-       
+        clone.querySelector("div .lead span").textContent = item.precio * item.cantidad;
+        clone.querySelector(".btn-danger").dataset.id = item.id;
+        clone.querySelector(".btn-success").dataset.id = item.id;
         fragment.appendChild(clone);
 
     })
        carrito.appendChild(fragment); 
+       pintarFooter();
  }
-btnsBotones.forEach((btn)=>btn.addEventListener("click", agregarAlCarrito));
+
+
+ const pintarFooter = () => {
+    console.log(footer);
+    footer.textContent = " ";
+    const total = carritoObjeto.reduce(
+
+        (acc, current) => acc + current.precio * current.cantidad, 0
+    );
+
+    const clone = templateFooter.content.cloneNode(true);
+    clone.querySelector("span").textContent = total;
+    
+    footer.appendChild(clone);
+    
+ }
+
+ const btnAumentar = (e) => {
+    
+      carritoObjeto = carritoObjeto.map( item => {
+
+        if(item.id === e.target.dataset.id)
+        {
+            item.cantidad++;
+        }
+        return item;
+
+      });
+
+      pintarCarrito();
+ }
+
+ const btnDisminuir = (e) =>{
+
+    carritoObjeto = carritoObjeto.filter(item =>{
+
+        if(item.id === e.target.dataset.id)
+        {
+            if(item.cantidad > 0)
+            {
+                item.cantidad--;
+                
+                if(item.cantidad === 0) return
+
+                return item;
+            }
+
+        }else {return item}
+    })
+   pintarCarrito();
+ }
+
   
 
-const frutas = ["banana", "manzana","frutillas"];
