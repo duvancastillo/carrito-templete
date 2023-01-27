@@ -69,7 +69,7 @@ const agregarAlCarrito = (e) =>{
 
 
  const pintarFooter = () => {
-    console.log(footer);
+    
     footer.textContent = " ";
     const total = carritoObjeto.reduce(
 
@@ -79,7 +79,8 @@ const agregarAlCarrito = (e) =>{
     const clone = templateFooter.content.cloneNode(true);
     clone.querySelector("span").textContent = total;
     
-    footer.appendChild(clone);
+    if(total > 0) footer.appendChild(clone);
+    
     
  }
 
@@ -110,12 +111,14 @@ const agregarAlCarrito = (e) =>{
                 
                 if(item.cantidad === 0) return
 
-                return item;
+               return item;
             }
 
         }else {return item}
     })
    pintarCarrito();
+
+
  }
 
   
